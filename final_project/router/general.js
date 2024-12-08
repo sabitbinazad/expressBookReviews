@@ -3,9 +3,10 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios');
 
 
-// Check if a user with the given username already exists
+/*Check if a user with the given username already exists
 const doesExist = (username) => {
     // Filter the users array for any user with the same username
     let userswithsamename = users.filter((user) => {
@@ -17,7 +18,38 @@ const doesExist = (username) => {
     } else {
         return false;
     }
-}
+}*/
+
+//Using Promise
+
+// Get the book list available in the shop using Promise callbacks
+public_users.get('/promise', function (req, res) {
+  axios.get('http://localhost:5000/') //the server runs locally
+    .then(response => {
+      res.status(200).send(response.data); // Send the books data as the response
+    })
+    .catch(error => {
+      res.status(500).send("Error fetching the book list");
+    });
+});
+
+
+// Get book details based on ISBN using Promise callbacks
+public_users.get('/promise/isbn/:isbn', function (req, res) {
+  const isbn = req.params.isbn; // Extract the ISBN from request parameters
+
+  axios.get(`http://localhost:5000/isbn/${isbn}`) //server runs locally
+    .then(response => {
+      res.status(200).send(response.data); // Send the book details as the response
+    })
+    .catch(error => {
+      res.status(500).send("Error fetching book details by ISBN");
+    });
+});
+
+
+
+
 
 
 public_users.post("/register", (req,res) => {
@@ -29,7 +61,7 @@ public_users.post("/register", (req,res) => {
   // Check if both username and password are provided
   if (username && password) {
       // Check if the user does not already exist
-      if (!doesExist(username)) {
+      if (!isValid(username)) {
           // Add the new user to the users array
           users.push({"username": username, "password": password});
           return res.status(200).json({message: "User successfully registered. Now you can login"});
