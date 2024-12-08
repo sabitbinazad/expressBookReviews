@@ -77,6 +77,33 @@ public_users.get('/author/promise/:author', (req, res) => {
 });
 
 
+// Endpoint to get book details based on Title using Promise callbacks
+public_users.get('/title/promise/:title', (req, res) => {
+    const title = req.params.title;
+
+    axios.get('http://localhost:3000/') // Fetch the full list of books
+        .then(response => {
+            const allBooks = response.data;
+            const matchingBooks = [];
+
+            // Filter books based on title
+            for (const isbn in allBooks) {
+                if (allBooks[isbn].title.toLowerCase() === title.toLowerCase()) {
+                    matchingBooks.push(allBooks[isbn]);
+                }
+            }
+
+            if (matchingBooks.length > 0) {
+                res.status(200).send(matchingBooks); // Return matching books
+            } else {
+                res.status(404).send(`No books found with title: ${title}`);
+            }
+        })
+        .catch(error => {
+            res.status(500).send("Error fetching books data.");
+        });
+});
+
 
 
 
