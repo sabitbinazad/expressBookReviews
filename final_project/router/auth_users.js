@@ -88,7 +88,17 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    // Extract email parameter from request URL
+    const isbn = req.params.isbn;
 
+    if (isbn) {
+        delete books[isbn].reviews;
+    }
+    
+    // Send response confirming deletion of friend
+    res.send(`Book Review with the ISBN ${isbn} deleted.`);
+});
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
